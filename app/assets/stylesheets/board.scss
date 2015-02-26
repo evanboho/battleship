@@ -1,10 +1,11 @@
+ul {
+  list-style: none
+}
 ul.grid {
-  list-style: none;
   li.row {
     float: left;
   }
   ul.row {
-    list-style: none;
     li.space {
       padding: 20px;
     }

@@ -3,8 +3,8 @@ class Game < ActiveRecord::Base
   before_create :create_boards
 
   def create_boards
-    Board.create(owner: 'Computer')
-    Board.create(owner: 'Human')
+    boards.new(owner: 'Computer')
+    boards.new(owner: 'Human')
   end
 
 end

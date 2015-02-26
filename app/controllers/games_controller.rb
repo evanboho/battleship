@@ -17,4 +17,11 @@ class GamesController < ApplicationController
     end
   end
 
+  def add_boat
+    @game = Game.find(params[:id])
+    boat = Boat.find_by name: params[:name]
+    board = @game.boards.find_by owner: 'Human'
+    board.create_spaces_for_boat boat, params[:space].split('')
+  end
+
 end

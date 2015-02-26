@@ -11,8 +11,8 @@ class Board < ActiveRecord::Base
   end
 
   def add_boat(boat)
-    space_candidate = grid.shuffle.first
-    dir = %(up right).shuffle.first
+    space_candidate = self.class.grid.shuffle.first
+    dir = %w(up right).shuffle.first
     valid = create_spaces_for_boat(boat, space_candidate, dir)
     add_boat(boat) if !valid
   end
@@ -55,8 +55,8 @@ class Board < ActiveRecord::Base
   end
 
   def self.unflat_grid
-    LETTERS.map do |letter|
-      NUMBERS.map do |number|
+    NUMBERS.map do |number|
+      LETTERS.map do |letter|
         [letter, number]
       end
     end
