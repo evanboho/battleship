@@ -3,8 +3,8 @@ Rails.application.routes.draw do
   resources :games, only: [:new, :create, :show] do
     member do
       post :add_boat
+      post '/guess' => 'games#guess'
     end
-    post '/guess' => 'games#guess'
   end
 
   # The priority is based upon order of creation: first created -> highest priority.

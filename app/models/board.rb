@@ -66,12 +66,10 @@ class Board < ActiveRecord::Base
   end
 
   def guess(letter, number)
-    space = spaces.guessable_only.find_by_letter_and_number(letter, number)
+    space = spaces.boats_only.find_by_letter_and_number(letter, number)
 
-    if space.blank?
-      raise "No guessable spaces at #{letter} #{number}"
-    elsif space.open?
-      space.update_attributes(state: 'guessed')
+    if space.blank? # Miss
+      spaces.create(letter: letter, number: number, state: "guessed")
 
       false
     elsif space.boat?
