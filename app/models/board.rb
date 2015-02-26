@@ -34,11 +34,15 @@ class Board < ActiveRecord::Base
   end
 
   def self.grid
+    unflat_grid.inject(:+)
+  end
+
+  def self.unflat_grid
     LETTERS.map do |letter|
       NUMBERS.map do |number|
         [letter, number]
       end
-    end.inject(:+)
+    end
   end
 
   def guess(letter, number)
