@@ -11,26 +11,43 @@ class Board < ActiveRecord::Base
   end
 
   def add_boat(boat)
-    space = grid.shuffle.first
+    space_candidate = grid.shuffle.first
     dir = %(up right).shuffle.first
-    valid = create_spaces_for_boat(boat, space, dir)
+    valid = create_spaces_for_boat(boat, space_candidate, dir)
     add_boat(boat) if !valid
   end
 
-  def create_spaces_for_boat(boat, space, dir)
-    boat_spaces = [space]
+  def create_spaces_for_boat(boat, space_candidate, dir)
+    boat_spaces = [space_candidate]
     if dir == 'up'
-      (boat.size - 1).times do
-        letter = space[0]
+      (boat.size.to_i - 1).times do
+        letter = space_candidate[0]
         prev_letter = (letter.ord - 1).chr
-        space = [prev_letter, space[1]]
-        boat_spaces << space
+        space_candidate = [prev_letter, space_candidate[1]]
+
+        if self.class.grid.include? space_candidate
+          boat_spaces << space_candidate
+        else
+          return false
+        end
       end
     elsif dir == 'right'
-      (boat.size - 1).times do
+      (boat.size.to_i - 1).times do
+        number = space_candidate[1]
+        space_candidate = [space_candidate[0], number + 1]
 
+        if self.class.grid.include? space_candidate
+          boat_spaces << space_candidate
+        else
+          return false
+        end
       end
     end
+
+    boat_spaces.each do |space_candidate|
+      self.spaces << Space.create(letter: space_candidate[0], number: space_candidate[1], state: "boat")
+    end
+    true
   end
 
   def self.grid
