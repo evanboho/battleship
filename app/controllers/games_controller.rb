@@ -16,10 +16,24 @@ class GamesController < ApplicationController
     else
      render 'setup'
     end
+    #if spaces_count == Boat.pluck(:size).inject(:+) * 2
+    # render 'show'
+    #else
+    # render 'setup'
+    #end
   end
 
   def guess
-    redirect_to :show
+    @game = Game.find(params[:id])
+    guess = params[:guess].split('')
+    letter = guess[0]
+    number = guess[1]
+
+    computer_board = @game.boards.find_by(owner: 'Computer')
+
+    computer_board.guess(letter, number)
+
+    redirect_to @game
   end
 
   def add_boat

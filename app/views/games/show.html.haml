@@ -1,29 +1,24 @@
-- computer_board = @game.boards.find_by owner: 'Computer'
-.row
-  .col-md-6
-    %h1 Computer
-    %table.grid
-      - Board.unflat_grid.each do |row|
-        %tr
-          - row.each do |space|
-            %td.space{class: ('boat' if space.in? computer_board.current_occupied_spaces)}
-              = link_to space.join(''), game_guess_path(@game), method: :post
-
-  .col-md-6
-    %h3 Boats
-    %ul
-      - Boat.all.each do |boat|
-        %li #{boat.name}: #{boat.size}
-
-%br
-%br
-- human_board = @game.boards.find_by owner: 'Computer'
-.row
-  .col-md-12
-    %h1 YOUR BOARD
-    %table.grid
-      - Board.unflat_grid.each do |row|
-        %tr
-          - row.each do |space|
-            %td.space{class: ('boat' if space.in? human_board.current_occupied_spaces)}
-              = link_to space.join(''), game_guess_path(@game), method: :post
+- board = @game.boards.find_by(owner: 'Computer')
+.show
+  .row
+    .col-md-6
+      %h1 Computer
+      %table.grid
+        - Board.unflat_grid.each do |row|
+          %tr
+            - row.each do |space|
+              %td.space{class: ('boat' if space.in?(board.current_occupied_spaces))}
+                - guess = space.join('')
+                = link_to guess, guess_game_path(@game, guess: guess), class: 'fire', method: :post
+  %br
+  %br
+  - human_board = @game.boards.find_by owner: 'Computer'
+  .row
+    .col-md-12
+      %h1 YOUR BOARD
+      %table.grid
+        - Board.unflat_grid.each do |row|
+          %tr
+            - row.each do |space|
+              %td.space{class: ('boat' if space.in? human_board.current_occupied_spaces)}
+                = link_to space.join(''), guess_game_path(@game), method: :post
