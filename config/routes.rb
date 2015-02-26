@@ -4,6 +4,7 @@ Rails.application.routes.draw do
     member do
       post :add_boat
     end
+    post '/guess' => 'games#guess'
   end
 
   # The priority is based upon order of creation: first created -> highest priority.

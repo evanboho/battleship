@@ -1,13 +1,9 @@
-ul {
-  list-style: none
-}
-ul.grid {
-  li.row {
-    float: left;
+table.grid {
+  float: left;
+
+  tr.row {
   }
-  ul.row {
-    li.space {
-      padding: 20px;
-    }
+  td {
+    padding: 20px;
   }
 }

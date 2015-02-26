@@ -1,0 +1,16 @@
+.row-fluid
+  .col-md-6
+    %table.grid
+      - Board.unflat_grid.each do |row|
+        %tr
+          - row.each do |space|
+            %td.space
+              = link_to space.join(''), game_guess_path(@game), method: :post
+  .col-md-6
+    %h3 Boats
+    %ul
+      - Boat.all.each do |boat|
+        %li #{boat.name}: #{boat.size}
+
+
+

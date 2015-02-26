@@ -10,11 +10,18 @@ class GamesController < ApplicationController
 
   def show
     @game = Game.find(params[:id])
-    if @game.started
-      render 'show'
-    else
-      render 'setup'
-    end
+    render 'show'
+    #if @game.started
+    #  render 'show'
+    #else
+    #  render 'setup'
+    #end
+  end
+
+  def guess
+    byebug
+
+    redirect_to :show
   end
 
   def add_boat
