@@ -10,25 +10,28 @@ class GamesController < ApplicationController
 
   def show
     @game = Game.find(params[:id])
-    render 'show'
-    #if @game.started
-    #  render 'show'
-    #else
-    #  render 'setup'
-    #end
+    spaces_count = @game.boards.map { |a| a.spaces.count }.inject(:+)
+    if spaces_count == Boat.pluck(:size).inject(:+) * 2
+     render 'show'
+    else
+     render 'setup'
+    end
   end
 
   def guess
-    byebug
-
     redirect_to :show
   end
 
   def add_boat
     @game = Game.find(params[:id])
-    boat = Boat.find_by name: params[:name]
+    boat = Boat.find_by name: params[:boat_name]
     board = @game.boards.find_by owner: 'Human'
-    board.create_spaces_for_boat boat, params[:space].split('')
+    byebug
+    if board.create_spaces_for_boat boat, params[:letter] + params[:number], 'right'
+      redirect_to @game
+    else
+      redirect_to @game, flash: 'Something went wrong'
+    end
   end
 
 end

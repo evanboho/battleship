@@ -1,13 +1,11 @@
 .setup
   .row-fluid
     .col-md-6
-      %ul.grid
+      %table.grid
         - Board.unflat_grid.each do |row|
-          %li.row
-            %ul.row
-              - row.each do |space|
-                %li.space= space.join ''
-
+          %tr
+            - row.each do |space|
+              %td.space{class: ('boat' if space.in?(@game.boards.find_by(owner: 'Human').current_occupied_spaces))}= space.join ''
 
     .col-md-6
       %h3 Boats

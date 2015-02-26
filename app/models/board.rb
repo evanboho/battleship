@@ -1,6 +1,6 @@
 class Board < ActiveRecord::Base
   has_many :spaces
-  after_create :add_boats, if: -> { owner == 'Computer' }
+  after_create :add_boats #, if: -> { owner == 'Computer' }
   LETTERS = ('a'..'j')
   NUMBERS = (1..10)
 
@@ -17,6 +17,10 @@ class Board < ActiveRecord::Base
     add_boat(boat) if !valid
   end
 
+  def current_occupied_spaces
+    @current_occupied_spaces ||= spaces.to_a.map { |a| a.letter + a.number }
+  end
+
   def create_spaces_for_boat(boat, space_candidate, dir)
     boat_spaces = [space_candidate]
     if dir == 'up'
@@ -25,7 +29,7 @@ class Board < ActiveRecord::Base
         prev_letter = (letter.ord - 1).chr
         space_candidate = [prev_letter, space_candidate[1]]
 
-        if self.class.grid.include? space_candidate
+        if self.class.grid.include?(space_candidate) && !current_occupied_spaces.include?(space_candidate)
           boat_spaces << space_candidate
         else
           return false
@@ -33,10 +37,9 @@ class Board < ActiveRecord::Base
       end
     elsif dir == 'right'
       (boat.size.to_i - 1).times do
-        number = space_candidate[1]
+        number = space_candidate[1].to_i
         space_candidate = [space_candidate[0], number + 1]
-
-        if self.class.grid.include? space_candidate
+        if self.class.grid.include?(space_candidate) && !current_occupied_spaces.include?(space_candidate)
           boat_spaces << space_candidate
         else
           return false
@@ -45,7 +48,7 @@ class Board < ActiveRecord::Base
     end
 
     boat_spaces.each do |space_candidate|
-      self.spaces << Space.create(letter: space_candidate[0], number: space_candidate[1], state: "boat")
+      spaces.create(letter: space_candidate[0], number: space_candidate[1], state: "boat")
     end
     true
   end

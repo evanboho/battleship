@@ -1,5 +1,7 @@
 class Space < ActiveRecord::Base
   belongs_to :board
+  validates_presence_of :letter
+  validates_presence_of :number
 
   # States
   # boat, guessed, and hit
