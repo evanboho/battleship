@@ -14,15 +14,17 @@
               %td.space{class: html_class}
                 - guess = space
                 = link_to guess, guess_game_path(@game, guess: guess), class: 'fire', method: :post
-  %br
-  %br
-  - human_board = @game.boards.find_by owner: 'Human'
-  .row
-    .col-md-12
+
+    - human_board = @game.boards.find_by owner: 'Human'
+    .col-md-6
       %h1 YOUR BOARD
       %table.grid
         - Board.unflat_grid.each do |row|
           %tr
             - row.each do |space|
-              %td.space{class: ('boat' if space.join('').in? human_board.current_occupied_spaces)}
-                = link_to space.join(''), guess_game_path(@game), method: :post
+              - space = space.join ''
+              - html_class = 'boat' if space.in?(human_board.current_occupied_spaces)
+              - html_class = 'hit' if space.in?(human_board.hit_spaces)
+              - html_class = 'guessed' if space.in? human_board.guessed_spaces
+              %td.space{class: html_class}
+                = link_to space, guess_game_path(@game), method: :post

@@ -12,22 +12,17 @@ class GamesController < ApplicationController
     @game = Game.find(params[:id])
     spaces_count = @game.boards.map { |a| a.spaces.count }.inject(:+)
     if @game.boards.find_by(owner:'Computer').spaces.boats_only.blank?
-      @winner = 'Computer'
-      render 'winner'
-    elsif @game.boards.find_by(owner:'Human').spaces.boats_only.blank?
       @winner = 'Human'
-      render 'winner'
+      render 'winner' and return
+    elsif @game.boards.find_by(owner:'Human').spaces.boats_only.blank?
+      @winner = 'Computer'
+      render 'winner' and return
     end
     if spaces_count >= Boat.pluck(:size).map(&:to_i).inject(:+) * 2
      render 'show'
     else
      render 'setup'
     end
-    #if spaces_count == Boat.pluck(:size).inject(:+) * 2
-    # render 'show'
-    #else
-    # render 'setup'
-    #end
   end
 
   def guess
@@ -35,17 +30,20 @@ class GamesController < ApplicationController
     guess = params[:guess].split('')
     letter = guess[0]
     number = guess[1]
+    number = '10' if params[:guess].match(/10/)
 
     computer_board = @game.boards.find_by(owner: 'Computer')
 
     computer_board.guess(letter, number)
 
-    human_board.@game.boards.find_by(owner: 'Human')
+    human_board = @game.boards.find_by(owner: 'Human')
 
-    random_guess_against_human = Board.grid.sample
-    letter = random_guess_against_human[0]
-    number = random_guess_against_human[1]
-    human_board.guess(letter, number)
+    educated_guess = human_board.educated_guess
+    if educated_guess
+      human_board.guess educated_guess[0], educated_guess[1]
+    else
+      human_board.random_guess #(letter, number)
+    end
 
     redirect_to @game
   end
