@@ -33,6 +33,13 @@ class GamesController < ApplicationController
 
     computer_board.guess(letter, number)
 
+    human_board.@game.boards.find_by(owner: 'Human')
+
+    random_guess_against_human = Board.grid.sample
+    letter = random_guess_against_human[0]
+    number = random_guess_against_human[1]
+    human_board.guess(letter, number)
+
     redirect_to @game
   end
 
