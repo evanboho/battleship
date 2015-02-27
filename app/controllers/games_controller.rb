@@ -11,7 +11,14 @@ class GamesController < ApplicationController
   def show
     @game = Game.find(params[:id])
     spaces_count = @game.boards.map { |a| a.spaces.count }.inject(:+)
-    if spaces_count == Boat.pluck(:size).map(&:to_i).inject(:+) * 2
+    if @game.boards.find_by(owner:'Computer').spaces.boats_only.blank?
+      @winner = 'Computer'
+      render 'winner'
+    elsif @game.boards.find_by(owner:'Human').spaces.boats_only.blank?
+      @winner = 'Human'
+      render 'winner'
+    end
+    if spaces_count >= Boat.pluck(:size).map(&:to_i).inject(:+) * 2
      render 'show'
     else
      render 'setup'
