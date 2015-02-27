@@ -7,7 +7,10 @@
         - Board.unflat_grid.each do |row|
           %tr
             - row.each do |space|
-              %td.space{class: ('boat' if space.in?(board.current_occupied_spaces))}
+              - html_class = 'boat' if space.in?(board.current_occupied_spaces)
+              - html_class = 'hit' if space.in?(board.hit_spaces)
+              - html_class = 'guessed' if space.in? board.guessed_spaces
+              %td.space{class: html_class}
                 - guess = space.join('')
                 = link_to guess, guess_game_path(@game, guess: guess), class: 'fire', method: :post
   %br
@@ -20,5 +23,5 @@
         - Board.unflat_grid.each do |row|
           %tr
             - row.each do |space|
-              %td.space{class: ('boat' if space.in? human_board.current_occupied_spaces)}
+              %td.space{class: ('boat' if space.join('').in? human_board.current_occupied_spaces)}
                 = link_to space.join(''), guess_game_path(@game), method: :post

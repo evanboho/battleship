@@ -18,7 +18,15 @@ class Board < ActiveRecord::Base
   end
 
   def current_occupied_spaces
-    @current_occupied_spaces ||= spaces.where(state: 'board').to_a.map { |a| a.letter + a.number }
+    @current_occupied_spaces ||= spaces.where(state: 'boat').to_a.map { |a| a.letter + a.number }
+  end
+
+  def hit_spaces
+    @hit_spaces ||= spaces.where(state: 'hit').to_a.map { |a| a.letter + a.number }
+  end
+
+  def guessed_spaces
+    @guessed_spaces ||= spaces.where(state: 'guessed').to_a.map { |a| a.letter + a.number }
   end
 
   def create_spaces_for_boat(boat, space_candidate, dir)
