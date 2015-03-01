@@ -1,5 +1,5 @@
 class Board < ActiveRecord::Base
-  has_many :spaces
+  has_many :spaces, autosave: true
   after_create :add_boats #, if: -> { owner == 'Computer' }
   LETTERS = ('a'..'j')
   NUMBERS = (1..10)
@@ -13,24 +13,25 @@ class Board < ActiveRecord::Base
   def add_boat(boat)
     space_candidate = self.class.grid.shuffle.first
     dir = %w(up right).shuffle.first
+    logger.debug dir
     valid = create_spaces_for_boat(boat, space_candidate, dir)
     add_boat(boat) if !valid
   end
 
   def current_occupied_spaces
-    @current_occupied_spaces ||= spaces.where(state: 'boat').to_a.map { |a| a.letter + a.number }
+    @current_occupied_spaces ||= spaces.select { |s| s.state == 'boat' }.map { |a| a.letter + a.number }
   end
 
   def hit_spaces
-    @hit_spaces ||= spaces.where(state: 'hit').to_a.map { |a| a.letter + a.number }
+    @hit_spaces ||= spaces.select { |s| s.state == 'hit' }.map { |a| a.letter + a.number }
   end
 
   def guessed_spaces
-    @guessed_spaces ||= spaces.where(state: 'guessed').to_a.map { |a| a.letter + a.number }
+    @guessed_spaces ||= spaces.select { |s| s.state == 'guessed' }.map { |a| a.letter + a.number }
   end
 
   def create_spaces_for_boat(boat, space_candidate, dir)
-    occ_spaces = spaces.where(state: 'boat').to_a.map { |a| a.letter + a.number }
+    occ_spaces = spaces.select { |s| s.state == 'boat' }.map { |a| a.letter + a.number }
     boat_spaces = [space_candidate]
     if dir == 'up'
       (boat.size.to_i - 1).times do
@@ -47,7 +48,7 @@ class Board < ActiveRecord::Base
     elsif dir == 'right'
       (boat.size.to_i - 1).times do
         number = space_candidate[1].to_i
-        space_candidate = [space_candidate[0], number + 1]
+        space_candidate = [space_candidate[0], (number + 1).to_s]
         if self.class.grid.include?(space_candidate) && !occ_spaces.include?(space_candidate.join(''))
           boat_spaces << space_candidate
         else
@@ -57,8 +58,9 @@ class Board < ActiveRecord::Base
     end
 
     boat_spaces.each do |space_candidate|
-      spaces.create(letter: space_candidate[0], number: space_candidate[1], state: "boat")
+      spaces.new(letter: space_candidate[0], number: space_candidate[1], state: "boat")
     end
+    self.save
     true
   end
 

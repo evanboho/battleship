@@ -4,7 +4,7 @@ class Space < ActiveRecord::Base
   # States
   # boat, guessed, and hit
 
-  scope :boats_only, -> { where(state: "boat") }
+  scope :boats, -> { where(state: "boat") }
   scope :hits, -> { where state: 'hit' }
 
   def boat?

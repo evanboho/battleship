@@ -1,3 +1,7 @@
-%h1 #{@winner} WINS
+%h1
+  - if @winner == 'Tie'
+    It's a TIE
+  - else
+    #{@winner} WINS
 
 = button_to 'Start Game', games_path, class: 'btn btn-success'
