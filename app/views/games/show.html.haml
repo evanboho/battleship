@@ -22,11 +22,11 @@
       %table.grid.human
         - Board.unflat_grid.each do |row|
           %tr
-            - row.each do |space|
-              - space = space.join ''
+            - row.each do |spaceArray|
+              - space = spaceArray.join ''
               - html_class = 'boat' if space.in?(human_board.current_occupied_spaces)
               - html_class = 'hit' if space.in?(human_board.hit_spaces)
               - html_class = 'guessed' if space.in? human_board.guessed_spaces
-              %td.space{class: html_class, data: { letter: space[0], number: space[1] }}
+              %td.space{class: html_class, data: { letter: spaceArray[0], number: spaceArray[1] }}
                 %button.btn.space
                   = link_to space, guess_game_path(@game), method: :post
