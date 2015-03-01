@@ -8,14 +8,15 @@ class Board < ActiveRecord::Base
     Boat.all.each do |boat|
       add_boat(boat)
     end
+    space_coords = spaces.boats.map { |a| [a.letter, a.number] }
+    raise 'Wrong number of spaces' if space_coords.count != space_coords.uniq.count
   end
 
   def add_boat(boat)
     space_candidate = self.class.grid.shuffle.first
     dir = %w(up right).shuffle.first
-    logger.debug dir
-    valid = create_spaces_for_boat(boat, space_candidate, dir)
-    add_boat(boat) if !valid
+    created_spaces = create_spaces_for_boat(boat, space_candidate, dir)
+    add_boat(boat) unless created_spaces
   end
 
   def current_occupied_spaces
@@ -31,37 +32,20 @@ class Board < ActiveRecord::Base
   end
 
   def create_spaces_for_boat(boat, space_candidate, dir)
-    occ_spaces = spaces.select { |s| s.state == 'boat' }.map { |a| a.letter + a.number }
-    boat_spaces = [space_candidate]
-    if dir == 'up'
-      (boat.size.to_i - 1).times do
-        letter = space_candidate[0]
-        prev_letter = (letter.ord - 1).chr
-        space_candidate = [prev_letter, space_candidate[1]]
-
-        if self.class.grid.include?(space_candidate) && !occ_spaces.include?(space_candidate.join(''))
-          boat_spaces << space_candidate
-        else
-          return false
-        end
-      end
-    elsif dir == 'right'
-      (boat.size.to_i - 1).times do
-        number = space_candidate[1].to_i
-        space_candidate = [space_candidate[0], (number + 1).to_s]
-        if self.class.grid.include?(space_candidate) && !occ_spaces.include?(space_candidate.join(''))
-          boat_spaces << space_candidate
-        else
-          return false
-        end
+    occ_spaces = spaces.where(state: 'boat').map { |a| [a.letter, a.number] }
+    return if occ_spaces.include?(space_candidate)
+    boat_spaces = [Space.new(letter: space_candidate[0], number: space_candidate[1], state: 'boat')]
+    (boat.size.to_i - 1).times do
+      neighbor_coords = boat_spaces.last.neighbor(dir)
+      if neighbor_coords && !occ_spaces.include?(neighbor_coords)
+        boat_spaces << Space.new(letter: neighbor_coords[0], number: neighbor_coords[1], state: 'boat')
       end
     end
-
-    boat_spaces.each do |space_candidate|
-      spaces.new(letter: space_candidate[0], number: space_candidate[1], state: "boat")
+    if boat_spaces.size == boat.size.to_i
+      boat_spaces.map do |space|
+        self.spaces << space
+      end
     end
-    self.save
-    true
   end
 
   def self.grid

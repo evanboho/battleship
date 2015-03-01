@@ -1,10 +1,17 @@
+button.space {
+  height: 30px;
+  width: 40px;
+  text-align: center;
+  padding: 0;
+}
+
 table.grid {
   float: left;
 
   tr.row {
   }
   td {
-    padding: 10px;
+    padding: 2px;
   }
   a {
     height: 100%;
@@ -12,14 +19,14 @@ table.grid {
   }
 }
 
-td.boat {
+td.boat button.space {
   background-color: #999;
 }
 
-td.guessed {
+td.guessed button.space {
   background-color: #f0f0f0;
 }
 
-td.hit {
+td.hit button.space {
   background-color: red;
 }

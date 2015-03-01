@@ -14,3 +14,7 @@ $ ->
     space = space.split('')
     $.post href, boat_name: boatName, letter: space[0], number: space[1]
 
+
+  $('button.space').on 'click', (e) ->
+    unless $(e.target).prop('tagName') == 'A'
+      $(@).find('a').click()

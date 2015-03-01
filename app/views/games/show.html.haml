@@ -12,8 +12,9 @@
               - html_class = 'hit' if space.in?(board.hit_spaces)
               - html_class = 'guessed' if space.in? board.guessed_spaces
               %td.space{class: html_class}
-                - guess = space
-                = link_to guess, guess_game_path(@game, guess: guess), class: 'fire', method: :post
+                %button.btn.space
+                  - guess = space
+                  = link_to guess, guess_game_path(@game, guess: guess), class: 'fire', method: :post
 
     - human_board = @game.boards.find_by owner: 'Human'
     .col-md-6
@@ -27,4 +28,5 @@
               - html_class = 'hit' if space.in?(human_board.hit_spaces)
               - html_class = 'guessed' if space.in? human_board.guessed_spaces
               %td.space{class: html_class}
-                = link_to space, guess_game_path(@game), method: :post
+                %button.btn.space
+                  = link_to space, guess_game_path(@game), method: :post

@@ -42,6 +42,15 @@ describe Board do
         @board.create_spaces_for_boat(@boat, space_candidate, dir)
       }.to_not change { @board.spaces.where(state: 'boat').count }
     end
+
+    it 'returns false and does not create spaces if boat already exists' do
+      @board.spaces.create(letter: 'a', number: '2', state: 'boat')
+      space_candidate = ['a', '1']
+      dir = 'right'
+      expect {
+        @board.create_spaces_for_boat(@boat, space_candidate, dir)
+      }.to_not change { @board.spaces.where(state: 'boat').count }
+    end
   end
 end
 
