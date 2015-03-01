@@ -13,7 +13,7 @@ submitGuess = ($el) ->
           .addClass(response.computer_board.state)
         $("table.human td.space[data-letter='#{response.human_board.letter}'][data-number='#{response.human_board.number}']")
           .addClass(response.human_board.state)
-        if !$('table.computer td.boat').length || !$('table.human td.boat').length
+        if $('table.computer td.hit').length == 17 || !$('table.human td.hit').length == 17
           window.location.reload()
 
 $ ->
@@ -34,6 +34,8 @@ $ ->
 
 
   $('button.space').on 'click', (e) ->
+    if $(@).closest('td').hasClass('hit') || $(@).closest('td').hasClass('guessed')
+      return false
     try
       submitGuess $(@).find('a')
     return false
