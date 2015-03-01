@@ -1,25 +1,25 @@
-- board = @game.boards.find_by(owner: 'Computer')
+- computer_board = @game.boards.find_by(owner: 'Computer')
+- human_board = @game.boards.find_by owner: 'Human'
 .show
-  .row
-    .col-md-6
+  .row-fluid
+    .col-lg-6.col-sm-12
       %h1 Computer
-      %table.grid
+      %table.grid.computer
         - Board.unflat_grid.each do |row|
           %tr
-            - row.each do |space|
-              - space = space.join('')
-              -# html_class = 'boat' if space.in?(board.current_occupied_spaces)
-              - html_class = 'hit' if space.in?(board.hit_spaces)
-              - html_class = 'guessed' if space.in? board.guessed_spaces
-              %td.space{class: html_class}
+            - row.each do |spaceArray|
+              - space = spaceArray.join('')
+              -# html_class = 'boat' if space.in?(computer_board.current_occupied_spaces)
+              - html_class = 'hit' if space.in?(computer_board.hit_spaces)
+              - html_class = 'guessed' if space.in? computer_board.guessed_spaces
+              %td.space{class: html_class, data: { letter: spaceArray[0], number: spaceArray[1].to_s }}
                 %button.btn.space
                   - guess = space
                   = link_to guess, guess_game_path(@game, guess: guess), class: 'fire', method: :post
 
-    - human_board = @game.boards.find_by owner: 'Human'
-    .col-md-6
+    .col-lg-6.col-sm-12
       %h1 YOUR BOARD
-      %table.grid
+      %table.grid.human
         - Board.unflat_grid.each do |row|
           %tr
             - row.each do |space|
@@ -27,6 +27,6 @@
               - html_class = 'boat' if space.in?(human_board.current_occupied_spaces)
               - html_class = 'hit' if space.in?(human_board.hit_spaces)
               - html_class = 'guessed' if space.in? human_board.guessed_spaces
-              %td.space{class: html_class}
+              %td.space{class: html_class, data: { letter: space[0], number: space[1] }}
                 %button.btn.space
                   = link_to space, guess_game_path(@game), method: :post

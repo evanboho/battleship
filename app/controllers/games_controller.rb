@@ -29,18 +29,28 @@ class GamesController < ApplicationController
 
     computer_board = @game.boards.find_by(owner: 'Computer')
 
-    computer_board.guess(letter, number)
+    computer_board_guess = computer_board.guess(letter, number)
 
     human_board = @game.boards.find_by(owner: 'Human')
 
-    educated_guess = human_board.educated_guess
-    if educated_guess
-      human_board.guess educated_guess[0], educated_guess[1]
+    if !computer_board_guess[:state].in? ['invalid guess', 'already guessed']
+      educated_guess = human_board.educated_guess
+      human_board_guess = if educated_guess
+        human_board.guess educated_guess[0], educated_guess[1]
+      else
+        human_board.random_guess
+      end
     else
-      human_board.random_guess #(letter, number)
+      human_board_guess = {}
     end
 
-    redirect_to @game
+    respond_to do |format|
+      format.html { redirect_to @game }
+      format.json do
+        json = { computer_board: computer_board_guess, human_board: human_board_guess }
+        render json: json
+      end
+    end
   end
 
   def add_boat

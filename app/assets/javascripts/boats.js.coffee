@@ -1,3 +1,21 @@
+submitGuess = ($el) ->
+  url = $el.attr('href').replace('?', '.json?')
+  $.post url, (response) ->
+    switch response.computer_board.state
+      when 'already guessed'
+        alert 'You already guessed that space'
+      when 'invalid guess'
+        alert 'You somehow guessed a space that is not on the board.'
+      else
+        computerBoardGuess = response.computer_board.letter + response.computer_board.number
+        humanBoardGuess = response.human_board.letter + response.human_board.number
+        $("table.computer td.space[data-letter='#{response.computer_board.letter}'][data-number='#{response.computer_board.number}']")
+          .addClass(response.computer_board.state)
+        $("table.human td.space[data-letter='#{response.human_board.letter}'][data-number='#{response.human_board.number}']")
+          .addClass(response.human_board.state)
+        if !$('table.computer td.boat').length || !$('table.human td.boat').length
+          window.location.reload()
+
 $ ->
 
   $('.setup-boat').on 'click', ->
@@ -16,5 +34,6 @@ $ ->
 
 
   $('button.space').on 'click', (e) ->
-    unless $(e.target).prop('tagName') == 'A'
-      $(@).find('a').click()
+    try
+      submitGuess $(@).find('a')
+    return false

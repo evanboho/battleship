@@ -61,18 +61,23 @@ class Board < ActiveRecord::Base
   end
 
   def guess(letter, number)
-    raise 'Guess not on the board' if !self.class.grid.include?([letter, number])
+    return_hash = { letter: letter, number: number }
+    if !self.class.grid.include?([letter, number])
+      return_hash[:state] = 'invalid guess'
+      return return_hash
+    end
 
     existing_space = spaces.find_by letter: letter, number: number
     if existing_space.blank?
       spaces.create(state: 'guessed', letter: letter, number: number)
-      false
+      return_hash[:state] = 'guessed'
     elsif existing_space.boat?
       existing_space.update_attributes(state: 'hit')
-      true
+      return_hash[:state] = 'hit'
     else
-      raise "Already guessed" if existing_space.state != 'boat'
+      return_hash[:state] = 'already guessed'
     end
+    return_hash
   end
 
   def random_guess
