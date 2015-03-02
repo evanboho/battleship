@@ -32,12 +32,14 @@ class Board < ActiveRecord::Base
   end
 
   def create_spaces_for_boat(boat, space_candidate, dir)
-    occ_spaces = spaces.where(state: 'boat').map { |a| [a.letter, a.number] }
-    return if occ_spaces.include?(space_candidate)
+    occ_spaces = spaces.where(state: 'boat')
+    occ_space_coords = occ_spaces.map { |a| [a.letter, a.number] }
+    occ_space_neighbors = occ_spaces.map(&:neighbor_coordinates).inject(:+) || []
+    return if space_candidate.in?(occ_space_coords) || space_candidate.in?(occ_space_neighbors)
     boat_spaces = [Space.new(letter: space_candidate[0], number: space_candidate[1], state: 'boat')]
     (boat.size.to_i - 1).times do
       neighbor_coords = boat_spaces.last.neighbor(dir)
-      if neighbor_coords && !occ_spaces.include?(neighbor_coords)
+      if neighbor_coords && !neighbor_coords.in?(occ_space_coords) && !neighbor_coords.in?(occ_space_neighbors)
         boat_spaces << Space.new(letter: neighbor_coords[0], number: neighbor_coords[1], state: 'boat')
       end
     end
