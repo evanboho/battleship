@@ -1,4 +1,5 @@
 class GamesController < ApplicationController
+  before_action :find_game
 
   def new
   end
@@ -23,27 +24,13 @@ class GamesController < ApplicationController
   end
 
   def guess
-    @game = Game.find(params[:id])
-    letter = params[:guess].match(/^\w/).to_s
-    number = params[:guess].match(/\d+$/).to_s
-
-    computer_board = @game.boards.find_by(owner: 'Computer')
-
-    computer_board_guess = computer_board.guess(letter, number)
-
-    human_board = @game.boards.find_by(owner: 'Human')
-
+    computer_board_guess = computer_board.guess(*Coords.new(params[:guess]))
     if !computer_board_guess[:state].in? ['invalid guess', 'already guessed']
-      educated_guess = human_board.educated_guess
-      human_board_guess = if educated_guess
-        human_board.guess educated_guess[0], educated_guess[1]
-      else
-        human_board.random_guess
-      end
+      guess = Guesser.new(human_board.spaces).run!
+      human_board_guess = human_board.guess(*guess)
     else
       human_board_guess = {}
     end
-
     respond_to do |format|
       format.html { redirect_to @game }
       format.json do
@@ -57,12 +44,26 @@ class GamesController < ApplicationController
     @game = Game.find(params[:id])
     boat = Boat.find_by name: params[:boat_name]
     board = @game.boards.find_by owner: 'Human'
-    byebug
     if board.create_spaces_for_boat boat, params[:letter] + params[:number], 'right'
       redirect_to @game
     else
       redirect_to @game, flash: 'Something went wrong'
     end
+  end
+
+
+  private
+
+  def find_game
+    @game = Game.find(params[:id]) if params[:id]
+  end
+
+  def computer_board
+    @computer_board ||= @game.boards.detect { |a| a.owner == 'Computer' }
+  end
+
+  def human_board
+    @human_board ||= @game.boards.detect { |a| a.owner == 'Human' }
   end
 
 end

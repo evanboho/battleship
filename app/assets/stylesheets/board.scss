@@ -30,3 +30,7 @@ td.guessed button.space {
 td.hit button.space {
   background-color: red;
 }
+
+table.human .btn {
+  cursor: default;
+}

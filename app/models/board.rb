@@ -57,7 +57,7 @@ class Board < ActiveRecord::Base
   def self.unflat_grid
     NUMBERS.map do |number|
       LETTERS.map do |letter|
-        [letter, number.to_s]
+        Coords.new [letter, number.to_s]
       end
     end
   end
@@ -86,11 +86,7 @@ class Board < ActiveRecord::Base
     random_guess_against_human = (Board.grid - spaces.map { |a| a.letter + a.number }).sample
     letter = random_guess_against_human[0]
     number = random_guess_against_human[1]
-    begin
-      guess letter, number
-    rescue
-      random_guess
-    end
+    guess letter, number
   end
 
   def educated_guess

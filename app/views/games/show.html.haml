@@ -29,4 +29,4 @@
               - html_class = 'guessed' if space.in? human_board.guessed_spaces
               %td.space{class: html_class, data: { letter: spaceArray[0], number: spaceArray[1] }}
                 %button.btn.space
-                  = link_to space, guess_game_path(@game), method: :post
+                  = space
