@@ -1,20 +1,23 @@
 class Guesser
   attr_accessor :spaces
+  attr_accessor :difficulty
 
-  def initialize(init_spaces)
+  def initialize(init_spaces, difficulty=2)
     self.spaces = init_spaces
+    self.difficulty = difficulty
   end
 
   def run!
     guess = nil
     measure = Benchmark.measure do
-      guess = educated || random
+      guess = educated || find_boat || random
     end
     puts measure.total
     guess
   end
 
   def educated
+    return unless difficulty >= 2
     guesses = []
     hit_coords.each do |hit|
       hit_neighbor_coords = (hit.neighbors - guessed_coords) & hit_coords
@@ -22,11 +25,22 @@ class Guesser
         opposite_neighbor = try_opposite_neighbor(hit)
         guesses << opposite_neighbor if opposite_neighbor
       elsif hit_neighbor_coords.count == 0
-        guesses = hit.neighbors - not_boat_coords
+        guesses = (hit.neighbors - not_boat_coords) & Board.grid
       end
       break if guesses.present?
     end
     guesses.sample
+  end
+
+  def find_boat
+    return unless difficulty >= 3
+    r = rand
+    if difficulty == 3
+      return if rand > 0.25
+    else
+      return if rand > 0.5
+    end
+    spaces.boats.sample.coords
   end
 
   def hit_coords

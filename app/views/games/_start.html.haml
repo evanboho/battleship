@@ -1,0 +1,20 @@
+= form_tag difficulty_games_path, method: :post, remote: true do
+
+  .form-group
+    = radio_button_tag :difficulty, 1, session[:difficulty] == 1
+    = label_tag :difficulty_1, 'Easy'
+
+  .form-group
+    = radio_button_tag :difficulty, 2, session[:difficulty] == 2
+    = label_tag :difficulty_2, 'Medium'
+
+  .form-group
+    = radio_button_tag :difficulty, 3, session[:difficulty] == 3
+    = label_tag :difficulty_3, 'Hard'
+
+  .form-group
+    = radio_button_tag :difficulty, 4, session[:difficulty] == 4
+    = label_tag :difficulty_4, 'Impossible'
+
+
+= button_to 'Start Game', games_path, class: 'btn btn-success'

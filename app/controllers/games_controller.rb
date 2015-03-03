@@ -26,7 +26,7 @@ class GamesController < ApplicationController
   def guess
     computer_board_guess = computer_board.guess(*Coords.new(params[:guess]))
     if !computer_board_guess[:state].in? ['invalid guess', 'already guessed']
-      guess = Guesser.new(human_board.spaces).run!
+      guess = Guesser.new(human_board.spaces, session[:difficulty]).run!
       human_board_guess = human_board.guess(*guess)
     else
       human_board_guess = {}
@@ -49,6 +49,11 @@ class GamesController < ApplicationController
     else
       redirect_to @game, flash: 'Something went wrong'
     end
+  end
+
+  def difficulty
+    session[:difficulty] = params[:difficulty].to_i
+    render nothing: true
   end
 
 

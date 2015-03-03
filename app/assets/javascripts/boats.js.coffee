@@ -39,3 +39,6 @@ $ ->
     try
       submitGuess $(@).find('a')
     return false
+
+  $('input[type=radio]').on 'change', ->
+    $(this).closest('form').submit()
